@@ -9,8 +9,8 @@ module Notifications
       belongs_to :user, class_name: Notifications.config.user_class
 
       belongs_to :target, polymorphic: true
-      belongs_to :second_target, polymorphic: true
-      belongs_to :third_target, polymorphic: true
+      belongs_to :second_target, polymorphic: true, optional: true
+      belongs_to :third_target, polymorphic: true, optional: true
 
       scope :unread, -> { where(read_at: nil) }
     end
@@ -38,7 +38,7 @@ module Notifications
     module ClassMethods
       def read!(ids = [])
         return if ids.blank?
-        Notification.where(id: ids).update_all(read_at: Time.now)
+        Notification.where(:id.in => ids).update_all(read_at: Time.now)
       end
 
       def unread_count(user)
